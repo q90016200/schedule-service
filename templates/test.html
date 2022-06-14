@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script src="https://unpkg.com/vue@3"></script>
+
+<div id="app">${ message }$</div>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        message: 'Hello Vue!'
+      }
+    },
+    compilerOptions: {
+      delimiters: ["${", "}$"]
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>
