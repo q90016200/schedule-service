@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/robfig/cron/v3"
 	"net/http"
 	"scheduleService/config"
+	"time"
 )
 
 func main() {
@@ -40,4 +43,49 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func testCron()  {
+
+	i := 0
+	c := cron.New(cron.WithSeconds())
+	c1 := &cron.Cron{}
+	c.AddFunc("*/1 * * * * *", func() {
+		fmt.Println("c Every 1 sec", i)
+
+		if i == 0 {
+			c1 = subCron()
+		}
+
+		if i == 10 {
+			fmt.Println("c1 stop")
+			c1.Stop()
+		}
+
+		i++
+	})
+	c.Start()
+
+	//i2 := 0
+	//b := cron.New(cron.WithSeconds())
+	//b.AddFunc("*/1 * * * * *", func() {
+	//	fmt.Println("b Every 1s", i)
+	//	i2 ++
+	//	if i2 > 5 { b.Stop() }
+	//})
+	//b.Start()
+}
+
+func subCron() (c *cron.Cron) {
+	fmt.Println("subCron")
+	c = cron.New(cron.WithSeconds())
+	_, err := c.AddFunc("*/1 * * * * *", func() {
+		fmt.Println("subCron:", time.Now())
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.Start()
+
+	return c
 }
