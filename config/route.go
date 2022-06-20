@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RouteTask(r *gin.Engine) {
-	task := r.Group("/task")
+func RouteJob(r *gin.Engine) {
+	job := r.Group("/job")
 	{
-		task.POST("/", controller.TaskController().CreateTask)
-		task.GET("/", controller.TaskController().QueryTask)
+		job.POST("/", controller.JobController().Create)
+		job.GET("/", controller.JobController().Query)
 	}
 }

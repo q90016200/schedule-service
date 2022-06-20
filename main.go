@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/robfig/cron/v3"
 	"net/http"
 	"scheduleService/config"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/robfig/cron/v3"
 )
 
 func main() {
+	//testCron()
+
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
 	r := gin.Default()
@@ -35,31 +38,27 @@ func main() {
 			"title": "Hello Gin",
 		})
 	})
-	config.RouteTask(r)
+	config.RouteJob(r)
 
 	// By default it serves on :8080 unless a PORT environment variable was defined.
-	err := r.Run()
-	// router.Run(":3000") for a hard coded port
-	if err != nil {
-		panic(err)
-	}
+	r.Run()
 }
 
-func testCron()  {
-
+func testCron() {
 	i := 0
 	c := cron.New(cron.WithSeconds())
-	c1 := &cron.Cron{}
+	//sc := &cron.Cron{}
+	tasks := make(map[string]*cron.Cron)
 	c.AddFunc("*/1 * * * * *", func() {
 		fmt.Println("c Every 1 sec", i)
 
 		if i == 0 {
-			c1 = subCron()
+			tasks["1"] = subCron()
 		}
 
 		if i == 10 {
 			fmt.Println("c1 stop")
-			c1.Stop()
+			tasks["1"].Stop()
 		}
 
 		i++
