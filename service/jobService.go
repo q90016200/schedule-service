@@ -20,6 +20,7 @@ func JobService() JobServiceStruct {
 
 func (r JobServiceStruct) Create(data model.Job) error {
 	// 寫入資料更改建立更改時間狀態
+	data.ID = primitive.NewObjectID()
 	data.CreatedAt = time.Now().UTC()
 	data.UpdatedAt = time.Now().UTC()
 	data.Status = "working"
@@ -79,7 +80,7 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 		results = append(results, &elem)
 	}
 
-	fmt.Println("result:", results)
+	//fmt.Println("result:", results)
 
 	return results, nil
 }

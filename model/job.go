@@ -1,8 +1,12 @@
 package model
 
-import "time"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type Job struct {
+	ID        primitive.ObjectID    `json:"id" bson:"_id"`
 	Name      string    `json:"name" bson:"name"`
 	Method    string    `json:"method" bson:"method"`
 	Path      string    `json:"path" bson:"path"`

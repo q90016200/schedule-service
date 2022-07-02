@@ -59,7 +59,8 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 func (r JobControllerStruct) Query(c *gin.Context) {
 	// 建立驗證
 	var requestField struct {
-		Id string `form:"id" json:"id" xml:"id"  binding:"required"`
+		//Id string `form:"id" json:"id" xml:"id"  binding:"required"`
+		Id string `form:"id" json:"id" xml:"id"`
 	}
 	// 若有錯誤返回
 	if err := c.ShouldBind(&requestField); err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"scheduleService/config"
+	"scheduleService/service"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,9 @@ import (
 
 func main() {
 	//testCron()
+
+	// schedule service start
+	service.ScheduleStart()
 
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
@@ -32,7 +36,6 @@ func main() {
 			"title": "Hello Gin",
 		})
 	})
-
 	r.GET("/test", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "test.html", gin.H{
 			"title": "Hello Gin",
