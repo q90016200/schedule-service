@@ -56,22 +56,22 @@ services:
 #    networks:
 #      docker_bridge:
 #        ipv4_address: 172.28.0.5
-  postgres:
-    image: postgres:14
-    restart: always
-    container_name: postgres
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      PGDATA: /var/lib/postgresql/data
-    volumes:
-      - "./db/postgres/data:/var/lib/postgresql/data"
-    ports:
-      - "5432:5432"
-    networks:
-      docker_bridge:
-        ipv4_address: 172.28.0.6
+# postgres:
+#   image: postgres:14
+#   restart: always
+#   container_name: postgres
+#   environment:
+#     POSTGRES_DB: postgres
+#     POSTGRES_USER: postgres
+#     POSTGRES_PASSWORD: postgres
+#     PGDATA: /var/lib/postgresql/data
+#   volumes:
+#     - "./db/postgres/data:/var/lib/postgresql/data"
+#   ports:
+#     - "5432:5432"
+#   networks:
+#     docker_bridge:
+#       ipv4_address: 172.28.0.6
 networks:
   docker_bridge:
     driver: bridge

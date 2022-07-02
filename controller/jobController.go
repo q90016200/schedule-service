@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"scheduleService/model"
 	"scheduleService/service"
@@ -56,14 +57,12 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 }
 
 func (r JobControllerStruct) Query(c *gin.Context) {
-	jobId := c.Query("id")
-
 	// 建立驗證
-	var validationField struct {
+	var requestField struct {
 		Id string `form:"id" json:"id" xml:"id"  binding:"required"`
 	}
 	// 若有錯誤返回
-	if err := c.ShouldBind(&validationField); err != nil {
+	if err := c.ShouldBind(&requestField); err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -71,13 +70,20 @@ func (r JobControllerStruct) Query(c *gin.Context) {
 		return
 	}
 
-	msg := "query " + jobId
+	fmt.Println("id:", requestField.Id)
+
+	result,err := service.JobService().Query(requestField.Id)
+	if err != nil {
+		formatResp{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}.customResponse(c)
+		return
+	}
+
 	formatResp{
 		Code:    http.StatusOK,
-		Message: msg,
-		Data: gin.H{
-			"test": "test",
-		},
+		Data: result,
 	}.customResponse(c)
 }
 
@@ -88,9 +94,9 @@ func (r formatResp) customResponse(c *gin.Context) {
 		"message": r.Message,
 	}
 
-	//if r.Code == http.StatusOK {
-	//	h["data"] = r.Data
-	//}
+	if r.Code == http.StatusOK {
+		h["data"] = r.Data
+	}
 
 	c.JSON(r.Code, h)
 }
