@@ -23,7 +23,7 @@ func (r JobServiceStruct) Create(data model.Job) error {
 	data.ID = primitive.NewObjectID()
 	data.CreatedAt = time.Now().UTC()
 	data.UpdatedAt = time.Now().UTC()
-	data.Status = "working"
+	data.Status = "1"
 	// 寫入 db
 	mongoConfig := dao.Config{
 		Host: os.Getenv("MONGODB_HOST"),

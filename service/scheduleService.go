@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
 	"scheduleService/model"
 )
 
@@ -26,7 +28,7 @@ func ScheduleStart() {
 
 		for _,v := range query{
 			_, exists := tasks[v.ID.Hex()]
-			if v.Status == "working" {
+			if v.Status == "1" {
 				if !exists {
 					fmt.Println("new task:", v.Name)
 					tasks[v.ID.Hex()] = newTask(v)
@@ -55,6 +57,27 @@ func newTask(task *model.Job) (c *cron.Cron) {
 			"method": task.Method,
 			"path": task.Path,
 		}).Info()
+
+		switch task.Method {
+		case "http":
+			url := task.Path
+
+			client := http.Client{}
+			rsp, err := client.Get(url)
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer rsp.Body.Close()
+
+			body, err := ioutil.ReadAll(rsp.Body)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println("RSP:", string(body))
+
+			break
+		}
+
 	}
 	f()
 	c.AddFunc(task.Cron, f)
