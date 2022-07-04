@@ -86,9 +86,3 @@ func newTask(task *model.Job) (c *cron.Cron) {
 	return c
 }
 
-
-
-
-
-
-

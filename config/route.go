@@ -11,5 +11,7 @@ func RouteJob(r *gin.Engine) {
 	{
 		job.POST("/", controller.JobController().Create)
 		job.GET("/", controller.JobController().Query)
+		job.GET("/:id", controller.JobController().Query)
+		job.PUT("/:id", controller.JobController().Update)
 	}
 }

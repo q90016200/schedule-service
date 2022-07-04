@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"scheduleService/model"
 	"scheduleService/service"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,23 +57,8 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 }
 
 func (r JobControllerStruct) Query(c *gin.Context) {
-	// 建立驗證
-	var requestField struct {
-		//Id string `form:"id" json:"id" xml:"id"  binding:"required"`
-		Id string `form:"id" json:"id" xml:"id"`
-	}
-	// 若有錯誤返回
-	if err := c.ShouldBind(&requestField); err != nil {
-		formatResp{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		}.customResponse(c)
-		return
-	}
-
-	fmt.Println("id:", requestField.Id)
-
-	result,err := service.JobService().Query(requestField.Id)
+	id := c.DefaultQuery("id", "")
+	result,err := service.JobService().Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -85,6 +70,32 @@ func (r JobControllerStruct) Query(c *gin.Context) {
 	formatResp{
 		Code:    http.StatusOK,
 		Data: result,
+	}.customResponse(c)
+}
+
+func (r JobControllerStruct) Update(c *gin.Context)  {
+	id := c.Param("id")
+
+	data := model.Job{
+		Name:      c.PostForm("name"),
+		Method:    c.PostForm("method"),
+		Path:      c.PostForm("path"),
+		Cron:      c.PostForm("cron"),
+		Status:    c.PostForm("status"),
+		UpdatedAt: time.Now().UTC(),
+	}
+
+	err := service.JobService().Update(id, data)
+	if err != nil {
+		formatResp{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}.customResponse(c)
+		return
+	}
+
+	formatResp{
+		Code:    http.StatusOK,
 	}.customResponse(c)
 }
 
