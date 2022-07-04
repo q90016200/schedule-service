@@ -82,10 +82,6 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 	return results, nil
 }
 
-type UpdateFields struct {
-	
-}
-
 func (r JobServiceStruct) Update(id string, data model.Job) error {
 	// 搜尋 db
 	mongoClient, err := mongoConfig.Conn()
