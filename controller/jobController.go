@@ -58,7 +58,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 
 func (r JobControllerStruct) Query(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
-	result,err := service.JobService().Query(id)
+	result, err := service.JobService().Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -68,12 +68,12 @@ func (r JobControllerStruct) Query(c *gin.Context) {
 	}
 
 	formatResp{
-		Code:    http.StatusOK,
+		Code: http.StatusOK,
 		Data: result,
 	}.customResponse(c)
 }
 
-func (r JobControllerStruct) Update(c *gin.Context)  {
+func (r JobControllerStruct) Update(c *gin.Context) {
 	id := c.Param("id")
 
 	data := model.Job{
@@ -95,7 +95,24 @@ func (r JobControllerStruct) Update(c *gin.Context)  {
 	}
 
 	formatResp{
-		Code:    http.StatusOK,
+		Code: http.StatusOK,
+	}.customResponse(c)
+}
+
+func (r JobControllerStruct) Delete(c *gin.Context) {
+	id := c.Param("id")
+
+	err := service.JobService().Delete(id)
+	if err != nil {
+		formatResp{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}.customResponse(c)
+		return
+	}
+
+	formatResp{
+		Code: http.StatusOK,
 	}.customResponse(c)
 }
 

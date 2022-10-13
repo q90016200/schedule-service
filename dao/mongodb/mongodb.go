@@ -1,4 +1,4 @@
-package dao
+package mongodb
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type Config struct {
 	ReplicaSet    string
 }
 
-func (config *Config) Conn() (dbClient *mongo.Client, err error){
+func (config *Config) Conn() (dbClient *mongo.Client, err error) {
 	ctx, _ := context.WithTimeout(context.Background(), 180*time.Second)
 
 	// if !reflect.DeepEqual(config, Config{}) {
@@ -31,7 +31,7 @@ func (config *Config) Conn() (dbClient *mongo.Client, err error){
 	// }
 
 	hostList := strings.Split(config.Host, ";")
-	url := "mongodb://" + strings.Join(hostList, ":" + config.Port + ",") + ":" + config.Port
+	url := "mongodb://" + strings.Join(hostList, ":"+config.Port+",") + ":" + config.Port
 
 	if config.ReplicaSet != "" {
 		url = url + "/?replicaSet=" + config.ReplicaSet

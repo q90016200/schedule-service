@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"scheduleService/model"
+	"strconv"
 )
 
 // ScheduleStart 啟動排程任務
@@ -26,18 +27,20 @@ func ScheduleStart() {
 			panic("mongo query job fail")
 		}
 
-		for _,v := range query{
-			_, exists := tasks[v.ID.Hex()]
-			if v.Status == "1" {
+		for _, v := range query {
+			//_, exists := tasks[v.ID.Hex()]
+			idKey := strconv.FormatInt(v.ID, 10)
+			_, exists := tasks[idKey]
+			if v.Status == "working" {
 				if !exists {
 					fmt.Println("new task:", v.Name)
-					tasks[v.ID.Hex()] = newTask(v)
+					tasks[idKey] = newTask(v)
 				}
 			} else {
 				if exists {
 					fmt.Println("task:", v.Name, "stop")
-					tasks[v.ID.Hex()].Stop()
-					delete(tasks, v.ID.Hex())
+					tasks[idKey].Stop()
+					delete(tasks, idKey)
 				}
 			}
 		}
@@ -53,9 +56,9 @@ func newTask(task *model.Job) (c *cron.Cron) {
 	f := func() {
 		//logrus.Info("[ScheduleService]",task.Name, task.Path, common.MillisecondTimestamp())
 		logrus.WithFields(logrus.Fields{
-			"name": task.Name,
+			"name":   task.Name,
 			"method": task.Method,
-			"path": task.Path,
+			"path":   task.Path,
 		}).Info()
 
 		switch task.Method {
@@ -85,4 +88,3 @@ func newTask(task *model.Job) (c *cron.Cron) {
 
 	return c
 }
-
