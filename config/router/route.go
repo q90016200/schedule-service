@@ -1,9 +1,8 @@
-package config
+package router
 
 import (
-	"scheduleService/controller"
-
 	"github.com/gin-gonic/gin"
+	"scheduleService/controller"
 )
 
 func RouteJob(r *gin.Engine) {

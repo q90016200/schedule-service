@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
-	"scheduleService/config"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/robfig/cron/v3"
+	"net/http"
+	"scheduleService/controller"
+	"time"
 )
 
 func main() {
@@ -17,9 +16,13 @@ func main() {
 	// schedule service start
 	//service.ScheduleStart()
 
+	// -----------------------------
+
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
-	r := gin.Default()
+	r := gin.New()
+	r.Use(CORSMiddleware())
+
 	r.LoadHTMLGlob("templates/*")
 	// 設定靜態檔案路由
 	r.Static("/public", "public")
@@ -40,7 +43,15 @@ func main() {
 			"title": "Hello Gin",
 		})
 	})
-	config.RouteJob(r)
+	//router.RouteJob(r)
+
+	//r.Group("/api/job")
+
+	r.POST("/api/job/", controller.JobController().Create)
+	r.GET("/api/job/", controller.JobController().Query)
+	r.GET("/api/job/:id", controller.JobController().Query)
+	r.PUT("/api/job/:id", controller.JobController().Update)
+	r.DELETE("/api/job/:id", controller.JobController().Delete)
 
 	// By default it serves on :8080 unless a PORT environment variable was defined.
 	r.Run()
@@ -89,4 +100,20 @@ func subCron() (c *cron.Cron) {
 	c.Start()
 
 	return c
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
