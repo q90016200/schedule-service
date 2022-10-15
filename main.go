@@ -6,7 +6,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/robfig/cron/v3"
 	"net/http"
-	"scheduleService/controller"
+	"scheduleService/config/router"
 	"time"
 )
 
@@ -20,8 +20,9 @@ func main() {
 
 	// Creates a gin router with default middleware:
 	// logger and recovery (crash-free) middleware
-	r := gin.New()
+	r := gin.Default()
 	r.Use(CORSMiddleware())
+	//r.Use(cors.Default())
 
 	r.LoadHTMLGlob("templates/*")
 	// 設定靜態檔案路由
@@ -43,15 +44,15 @@ func main() {
 			"title": "Hello Gin",
 		})
 	})
-	//router.RouteJob(r)
+	router.RouteJobs(r)
 
 	//r.Group("/api/job")
 
-	r.POST("/api/job/", controller.JobController().Create)
-	r.GET("/api/job/", controller.JobController().Query)
-	r.GET("/api/job/:id", controller.JobController().Query)
-	r.PUT("/api/job/:id", controller.JobController().Update)
-	r.DELETE("/api/job/:id", controller.JobController().Delete)
+	//r.POST("/api/jobs", controller.JobController().Create)
+	//r.GET("/api/jobs", controller.JobController().Query)
+	//r.GET("/api/jobs/:id", controller.JobController().Query)
+	//r.PUT("/api/jobs/:id", controller.JobController().Update)
+	//r.DELETE("/api/jobs/:id", controller.JobController().Delete)
 
 	// By default it serves on :8080 unless a PORT environment variable was defined.
 	r.Run()

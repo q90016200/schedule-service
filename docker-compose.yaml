@@ -1,21 +1,21 @@
 version: '2'
 services:
-  mongo:
-    image: mongo:4.2
-    restart: always
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - "./db/mongo/data:/data/db"
-      - "./db/mongo/config:/data/configdb"
-      - "./db/mongo/vhost:/vhost"
-    environment :
-      - TZ=Asia/Taipei
-    # network_mode: "host"
-    networks:
-      docker_bridge:
-        ipv4_address: 172.28.0.3
+  # mongo:
+  #   image: mongo:4.2
+  #   restart: always
+  #   container_name: mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - "./db/mongo/data:/data/db"
+  #     - "./db/mongo/config:/data/configdb"
+  #     - "./db/mongo/vhost:/vhost"
+  #   environment :
+  #     - TZ=Asia/Taipei
+  #   # network_mode: "host"
+  #   networks:
+  #     docker_bridge:
+  #       ipv4_address: 172.28.0.3
   redis:
     image: redis
     restart: always
@@ -26,36 +26,36 @@ services:
     networks:
       docker_bridge:
         ipv4_address: 172.28.0.4
-#  mysql:
-#    image: mysql:8
-#    platform: linux/amd64
-#    restart: always
-#    container_name: mysql
-#    # 密碼模式改為傳統密碼
-#    # command: --default-authentication-plugin=mysql_native_password
-#    environment:
-#      - MYSQL_ROOT_PASSWORD=root
-#      # - MYSQL_USER=admin
-#      # - MYSQL_PASSWORD=admin
-#      - TZ=Asia/Taipei
-##      - MYSQL_DATABASE=schedule
-#    command:
-#      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
-#      --default-authentication-plugin=mysql_native_password
-#      --character-set-server=utf8mb4
-#      --collation-server=utf8mb4_general_ci
-#      --bind-address=0.0.0.0
-##      --explicit_defaults_for_timestamp=true
-##      --lower_case_table_names=1
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - "./db/mysql/data:/var/lib/mysql"
-#      - "./db/mysql/conf:/etc/mysql/conf.d"
-#    # network_mode: "host"
-#    networks:
-#      docker_bridge:
-#        ipv4_address: 172.28.0.5
+  mysql:
+    image: mysql:8
+    platform: linux/amd64
+    restart: always
+    container_name: mysql
+    # 密碼模式改為傳統密碼
+    # command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      # - MYSQL_USER=admin
+      # - MYSQL_PASSWORD=admin
+      - TZ=Asia/Taipei
+      # - MYSQL_DATABASE=schedule
+    command:
+      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --bind-address=0.0.0.0
+      # --explicit_defaults_for_timestamp=true
+      # --lower_case_table_names=1
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./db/mysql/data:/var/lib/mysql"
+      - "./db/mysql/conf:/etc/mysql/conf.d"
+    # network_mode: "host"
+    networks:
+      docker_bridge:
+        ipv4_address: 172.28.0.5
 # postgres:
 #   image: postgres:14
 #   restart: always
