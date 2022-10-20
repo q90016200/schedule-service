@@ -1,13 +1,12 @@
 package router
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"scheduleService/controller"
 )
 
 func RouteJobs(r *gin.Engine) {
-	jobs := r.Group("/api").Use(cors.Default())
+	jobs := r.Group("/api")
 	{
 		jobs.POST("/jobs", controller.JobController().Create)
 		jobs.GET("/jobs", controller.JobController().Query)

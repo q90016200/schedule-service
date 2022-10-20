@@ -31,7 +31,7 @@ func ScheduleStart() {
 			//_, exists := tasks[v.ID.Hex()]
 			idKey := strconv.FormatInt(v.ID, 10)
 			_, exists := tasks[idKey]
-			if v.Status == "working" {
+			if v.Status == "running" {
 				if !exists {
 					fmt.Println("new task:", v.Name)
 					tasks[idKey] = newTask(v)

@@ -9,7 +9,7 @@ import (
 
 type JobServiceStruct struct{}
 
-//var mongoConfig mongodb.Config
+// var mongoConfig mongodb.Config
 var mysqlConfig mysql.Config
 
 // JobService 用來建構 JobService 的假建構子
@@ -34,7 +34,7 @@ func JobService() JobServiceStruct {
 }
 
 func (r JobServiceStruct) Create(data model.Job) error {
-	data.Status = "working"
+	data.Status = "running"
 	//switch os.Getenv("DATABASE") {
 	//case "mongodb":
 	//	// 寫入資料更改建立更改時間狀態
