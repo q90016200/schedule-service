@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"scheduleService/model"
 	"scheduleService/service"
@@ -84,6 +85,8 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		Status:    c.PostForm("status"),
 		UpdatedAt: time.Now().UTC(),
 	}
+
+	fmt.Println(data.Name)
 
 	err := service.JobService().Update(id, data)
 	if err != nil {
