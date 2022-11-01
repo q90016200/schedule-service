@@ -105,7 +105,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 func (r JobControllerStruct) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	err := service.JobService().Delete(id)
+	result, err := service.JobService().Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -113,6 +113,18 @@ func (r JobControllerStruct) Delete(c *gin.Context) {
 		}.customResponse(c)
 		return
 	}
+
+	err = service.JobService().Delete(id)
+	if err != nil {
+		formatResp{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}.customResponse(c)
+		return
+	}
+
+	// 關閉 cron 服務
+	service.StopTask(id, result[0].Name)
 
 	formatResp{
 		Code: http.StatusOK,
