@@ -6,6 +6,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/robfig/cron/v3"
 	"net/http"
+	"os"
 	"scheduleService/config/router"
 	"scheduleService/service"
 	"time"
@@ -56,7 +57,7 @@ func main() {
 	//r.DELETE("/api/jobs/:id", controller.JobController().Delete)
 
 	// By default it serves on :8080 unless a PORT environment variable was defined.
-	r.Run()
+	r.Run(":" + os.Getenv("SERVICE_PORT"))
 }
 
 func testCron() {

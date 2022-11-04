@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,7 +16,7 @@ type Config struct {
 func (config *Config) Conn() (db *gorm.DB, err error) {
 	dsn := config.UserName + ":" + config.PassWord + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DataBase + "?charset=utf8mb4&parseTime=true&loc=Local"
 
-	fmt.Println(dsn)
+	//fmt.Println(dsn)
 
 	//db, err = gorm.Open(mysql.New(mysql.Config{
 	//	DSN: dsn,

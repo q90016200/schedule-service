@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"scheduleService/model"
 	"strconv"
@@ -13,10 +14,22 @@ import (
 )
 
 var syncTasks = sync.Map{}
+var taskLogger *log.Logger
+
+func init() {
+	taskLogFile, err := os.OpenFile("task.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalln("開啟 task 日誌檔案失敗：", err)
+	}
+
+	taskLogger = log.New()
+	taskLogger.Formatter = &log.JSONFormatter{}
+	taskLogger.SetOutput(taskLogFile)
+}
 
 // ScheduleStart 啟動排程任務
 func ScheduleStart() {
-	log.Info("[ScheduleService] is running")
+	//log.Info("[ScheduleService] is running")
 
 	// 存放需執行的任務
 	//tasks := make(map[string]*cron.Cron)
@@ -29,6 +42,7 @@ func ScheduleStart() {
 		FullTimestamp:   true,
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
+
 	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(logger)))
 
 	// 建立檢查任務狀態任務
@@ -80,7 +94,7 @@ func ScheduleStart() {
 			}
 		}
 
-		log.Info("[ScheduleService] check job end")
+		//log.Info("[ScheduleService] check job end")
 	})
 
 	c.Start()
@@ -100,19 +114,33 @@ func addTask(task *model.Job) (c *cron.Cron) {
 		switch task.Method {
 		case "http":
 			url := task.Path
-
 			client := http.Client{}
 			rsp, err := client.Get(url)
 			if err != nil {
-				fmt.Println(err)
+				//fmt.Println(err)
+				taskLogger.WithFields(log.Fields{
+					"name":  task.Name,
+					"path":  task.Path,
+					"error": err.Error(),
+				}).Error()
 			}
 			defer rsp.Body.Close()
 
 			body, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
-				fmt.Println(err)
+				log.Error(task.Name + " | " + url + " | " + err.Error())
+				taskLogger.WithFields(log.Fields{
+					"name":  task.Name,
+					"path":  task.Path,
+					"error": err.Error(),
+				}).Error()
 			}
-			fmt.Println("RSP:", string(body))
+			fmt.Println(task.Name+" | "+url+" | ", string(body))
+			taskLogger.WithFields(log.Fields{
+				"name":     task.Name,
+				"path":     task.Path,
+				"response": string(body),
+			}).Info()
 
 			break
 		}
