@@ -11,13 +11,16 @@ import (
 	"scheduleService/model"
 	"strconv"
 	"sync"
+	"time"
 )
 
 var syncTasks = sync.Map{}
 var taskLogger *log.Logger
 
 func init() {
-	taskLogFile, err := os.OpenFile("task.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	layout := "2006-01-02"
+	formatTime := time.Now().Format(layout)
+	taskLogFile, err := os.OpenFile("./logs/task-"+formatTime+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("開啟 task 日誌檔案失敗：", err)
 	}
