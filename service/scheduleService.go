@@ -20,6 +20,14 @@ var taskLogger *log.Logger
 func init() {
 	layout := "2006-01-02"
 	formatTime := time.Now().Format(layout)
+	folderName := "logs"
+	folderPath := folderName
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		// 必须分成两步：先创建文件夹、再修改权限
+		os.Mkdir(folderPath, 0777) //0777也可以os.ModePerm
+		os.Chmod(folderPath, 0777)
+	}
+
 	taskLogFile, err := os.OpenFile("./logs/task-"+formatTime+".log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("開啟 task 日誌檔案失敗：", err)
