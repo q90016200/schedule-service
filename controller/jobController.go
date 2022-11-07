@@ -78,17 +78,27 @@ func (r JobControllerStruct) Query(c *gin.Context) {
 func (r JobControllerStruct) Update(c *gin.Context) {
 	id := c.Param("id")
 
-	data := model.Job{
-		Name:      c.PostForm("name"),
-		Method:    c.PostForm("method"),
-		Path:      c.PostForm("path"),
-		Cron:      c.PostForm("cron"),
-		Group:     c.DefaultPostForm("group", ""),
-		Status:    c.PostForm("status"),
-		UpdatedAt: time.Now().UTC(),
+	//data := model.Job{
+	//	Name:      c.PostForm("name"),
+	//	Method:    c.PostForm("method"),
+	//	Path:      c.PostForm("path"),
+	//	Cron:      c.PostForm("cron"),
+	//	Group:     c.DefaultPostForm("group", ""),
+	//	Status:    c.PostForm("status"),
+	//	UpdatedAt: time.Now().UTC(),
+	//}
+
+	data := map[string]interface{}{
+		"Name":      c.PostForm("name"),
+		"Method":    c.PostForm("method"),
+		"Path":      c.PostForm("path"),
+		"Cron":      c.PostForm("cron"),
+		"Group":     c.DefaultPostForm("group", ""),
+		"Status":    c.PostForm("status"),
+		"UpdatedAt": time.Now().UTC(),
 	}
 
-	fmt.Println(data.Name)
+	fmt.Printf("%+v", data)
 
 	err := service.JobService().Update(id, data)
 	if err != nil {

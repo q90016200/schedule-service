@@ -115,7 +115,7 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 	return results, nil
 }
 
-func (r JobServiceStruct) Update(id string, data model.Job) error {
+func (r JobServiceStruct) Update(id string, data map[string]interface{}) error {
 	//// 搜尋 db
 	//mongoClient, err := mongoConfig.Conn()
 	//if err != nil {
