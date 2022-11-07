@@ -32,6 +32,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		Method string `form:"method" json:"method" xml:"method" binding:"required"`
 		Path   string `form:"path" json:"path" xml:"path"  binding:"required"`
 		Cron   string `form:"cron" json:"cron" xml:"cron"  binding:"required"`
+		Group  string `form:"group" json:"group"`
 	}
 	// 驗證請求資料
 	if err := c.ShouldBind(&requestField); err != nil {
@@ -82,6 +83,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		Method:    c.PostForm("method"),
 		Path:      c.PostForm("path"),
 		Cron:      c.PostForm("cron"),
+		Group:     c.DefaultPostForm("group", ""),
 		Status:    c.PostForm("status"),
 		UpdatedAt: time.Now().UTC(),
 	}

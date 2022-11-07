@@ -23,6 +23,5 @@ func (config *Config) Conn() (db *gorm.DB, err error) {
 	//}))
 
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
 	return
 }

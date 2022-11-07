@@ -58,10 +58,10 @@ func ScheduleStart() {
 
 	// 建立檢查任務狀態任務
 	c.AddFunc("* * * * *", func() {
-		log.Info("[ScheduleService] check job start")
+		//log.Info("[ScheduleService] check job start")
 		query, err := JobService().Query("")
 		if err != nil {
-			panic("mongo query job fail")
+			panic("query job fail")
 		}
 
 		//for _, v := range query {

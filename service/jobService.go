@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"os"
 	"scheduleService/dao/mysql"
 	"scheduleService/model"
@@ -103,7 +102,6 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 	//case "mysql":
 	db, err := mysqlConfig.Conn()
 	if err != nil {
-		fmt.Println("111:", err)
 		return results, err
 	}
 

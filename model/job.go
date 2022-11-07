@@ -12,6 +12,7 @@ type Job struct {
 	Method    string         `json:"method" bson:"method,omitempty"`
 	Path      string         `json:"path" bson:"path,omitempty"`
 	Cron      string         `json:"cron" bson:"cron,omitempty"`
+	Group     string         `json:"group" bson:"group,omitempty"`
 	Status    string         `json:"status" bson:"status,omitempty"`
 	CreatedAt time.Time      `json:"created_at" bson:"created_at,omitempty"`
 	UpdatedAt time.Time      `json:"updated_at" bson:"updated_at"`
