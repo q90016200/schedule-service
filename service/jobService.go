@@ -32,8 +32,9 @@ func JobService() JobServiceStruct {
 	return JobServiceStruct{}
 }
 
-func (r JobServiceStruct) Create(data model.Job) error {
+func (r JobServiceStruct) Create(data model.Job) (id int64, err error) {
 	data.Status = "running"
+
 	//switch os.Getenv("DATABASE") {
 	//case "mongodb":
 	//	// 寫入資料更改建立更改時間狀態
@@ -52,19 +53,20 @@ func (r JobServiceStruct) Create(data model.Job) error {
 	//	if err != nil {
 	//		panic(err)
 	//	}
+
 	//case "mysql":
 	db, err := mysqlConfig.Conn()
 	if err != nil {
-		return err
+		return id, err
 	}
 
 	result := db.Omit("ID").Create(&data)
 	if result.Error != nil {
-		panic(err)
+		return id, err
 	}
-	//}
+	id = data.ID
 
-	return nil
+	return id, nil
 }
 
 func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
@@ -106,7 +108,11 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 	}
 
 	//db.Unscoped().Find(&results)
-	db.Find(&results)
+	if id != "" {
+		db.Find(&results, id)
+	} else {
+		db.Find(&results)
+	}
 
 	//}
 

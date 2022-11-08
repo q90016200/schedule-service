@@ -64,43 +64,18 @@ func ScheduleStart() {
 			panic("query job fail")
 		}
 
-		//for _, v := range query {
-		//	//_, exists := tasks[v.ID.Hex()]
-		//	idKey := strconv.FormatInt(v.ID, 10)
-		//
-		//	_, exists := tasks[idKey]
-		//
-		//	if v.Status == "running" {
-		//		if !exists {
-		//			fmt.Println("new task:  ", v.Name)
-		//			tasks[idKey] = addTask(v)
-		//			syncTasks.Store(idKey, addTask(v))
-		//		}
-		//	} else {
-		//		if exists {
-		//			fmt.Println("task: ", v.Name, " - stop")
-		//			tasks[idKey].Stop()
-		//			delete(tasks, idKey)
-		//			syncTasks.Delete(idKey)
-		//		}
-		//	}
-		//}
-
 		for _, v := range query {
-			idKey := FormatTaskId(v.ID, v.Name)
-			task, exists := syncTasks.Load(idKey)
+			id := strconv.FormatInt(v.ID, 10)
+			idKey := FormatTaskId(id, v.Name)
+			_, exists := syncTasks.Load(idKey)
 
 			if v.Status == "running" {
 				if !exists {
-					fmt.Println("new task:  ", v.Name)
-					syncTasks.Store(idKey, addTask(v))
+					CreateCronTask(id, v)
 				}
 			} else {
 				if exists {
-					fmt.Println("task: ", v.Name, " - stop")
-
-					task.(*cron.Cron).Stop()
-					syncTasks.Delete(idKey)
+					StopCronTask(id, v.Name)
 				}
 			}
 		}
@@ -111,11 +86,12 @@ func ScheduleStart() {
 	c.Start()
 }
 
-// addTask 根據 list 建立任務並執行第一次
-func addTask(task *model.Job) (c *cron.Cron) {
-	c = cron.New()
+// CreateCronTask 建立排程任務並執行第一次
+func CreateCronTask(id string, task *model.Job) {
+	taskId := FormatTaskId(id, task.Name)
+	c := cron.New()
 	f := func() {
-		//logrus.Info("[ScheduleService]",task.Name, task.Path, common.MillisecondTimestamp())
+		fmt.Println("new task:  ", task.Name)
 		log.WithFields(log.Fields{
 			"name":   task.Name,
 			"method": task.Method,
@@ -161,15 +137,17 @@ func addTask(task *model.Job) (c *cron.Cron) {
 	c.AddFunc(task.Cron, f)
 	c.Start()
 
-	return c
+	syncTasks.Store(taskId, c)
 }
 
-func StopTask(id string, name string) {
+func StopCronTask(id string, name string) {
 	id = FormatTaskId(id, name)
 	task, exists := syncTasks.Load(id)
 	if exists {
 		task.(*cron.Cron).Stop()
 		syncTasks.Delete(id)
+
+		fmt.Println("task: ", name, " - stop")
 	}
 }
 

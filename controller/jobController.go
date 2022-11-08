@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"scheduleService/model"
 	"scheduleService/service"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -41,19 +43,26 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		respFmt.customResponse(c)
 		return
 	}
+
+	jobName := strings.TrimSpace(requestField.Name)
 	// 寫入任務至 database
-	err := service.JobService().Create(model.Job{
-		Name:   requestField.Name,
+	job := model.Job{
+		Name:   jobName,
 		Method: requestField.Method,
 		Path:   requestField.Path,
 		Cron:   requestField.Cron,
-	})
+	}
+	jobId, err := service.JobService().Create(job)
 	if err != nil {
 		respFmt.Code = http.StatusBadRequest
 		respFmt.Message = err.Error()
 		respFmt.customResponse(c)
 		return
 	}
+
+	// 開啟 cron 服務
+	id := strconv.FormatInt(jobId, 10)
+	service.CreateCronTask(id, &job)
 
 	respFmt.customResponse(c)
 }
@@ -77,22 +86,17 @@ func (r JobControllerStruct) Query(c *gin.Context) {
 
 func (r JobControllerStruct) Update(c *gin.Context) {
 	id := c.Param("id")
-
-	//data := model.Job{
-	//	Name:      c.PostForm("name"),
-	//	Method:    c.PostForm("method"),
-	//	Path:      c.PostForm("path"),
-	//	Cron:      c.PostForm("cron"),
-	//	Group:     c.DefaultPostForm("group", ""),
-	//	Status:    c.PostForm("status"),
-	//	UpdatedAt: time.Now().UTC(),
-	//}
+	jobName := strings.TrimSpace(c.PostForm("name"))
+	cron := c.PostForm("cron")
+	status := c.PostForm("status")
+	method := c.PostForm("method")
+	path := c.PostForm("path")
 
 	data := map[string]interface{}{
-		"Name":      c.PostForm("name"),
-		"Method":    c.PostForm("method"),
-		"Path":      c.PostForm("path"),
-		"Cron":      c.PostForm("cron"),
+		"Name":      jobName,
+		"Method":    method,
+		"Path":      path,
+		"Cron":      cron,
 		"Group":     c.DefaultPostForm("group", ""),
 		"Status":    c.PostForm("status"),
 		"UpdatedAt": time.Now().UTC(),
@@ -100,13 +104,53 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 
 	fmt.Printf("%+v", data)
 
-	err := service.JobService().Update(id, data)
+	query, err := service.JobService().Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		}.customResponse(c)
 		return
+	}
+
+	err = service.JobService().Update(id, data)
+	if err != nil {
+		formatResp{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		}.customResponse(c)
+		return
+	}
+
+	// 判斷排程是否重啟
+	cronStart := false
+	cronStop := false
+	job := query[0]
+	if job.Cron != cron {
+		cronStop = true
+		cronStart = true
+	}
+	if status != job.Status {
+		if status == "running" {
+			cronStart = true
+		} else if status == "stopped" {
+			cronStart = false
+			cronStop = true
+		}
+	}
+
+	fmt.Println("cronStart:", cronStart, "cronStop:", cronStop)
+
+	if cronStop {
+		service.StopCronTask(id, jobName)
+	}
+	if cronStart {
+		service.CreateCronTask(id, &model.Job{
+			Name:   jobName,
+			Method: method,
+			Path:   path,
+			Cron:   cron,
+		})
 	}
 
 	formatResp{
@@ -136,7 +180,7 @@ func (r JobControllerStruct) Delete(c *gin.Context) {
 	}
 
 	// 關閉 cron 服務
-	service.StopTask(id, result[0].Name)
+	service.StopCronTask(id, result[0].Name)
 
 	formatResp{
 		Code: http.StatusOK,
