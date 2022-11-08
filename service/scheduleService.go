@@ -133,7 +133,7 @@ func CreateCronTask(id string, task *model.Job) {
 		}
 
 	}
-	f()
+	//f()
 	c.AddFunc(task.Cron, f)
 	c.Start()
 

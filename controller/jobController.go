@@ -138,8 +138,11 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 			cronStop = true
 		}
 	}
+	if job.Status == "stopped" {
+		cronStart = false
+	}
 
-	fmt.Println("cronStart:", cronStart, "cronStop:", cronStop)
+	//fmt.Println("cronStart:", cronStart, "cronStop:", cronStop)
 
 	if cronStop {
 		service.StopCronTask(id, jobName)
