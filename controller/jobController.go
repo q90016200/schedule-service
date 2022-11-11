@@ -52,6 +52,10 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		Path:   requestField.Path,
 		Cron:   requestField.Cron,
 	}
+	if requestField.Group != "" {
+		job.Group = requestField.Group
+	}
+
 	jobId, err := service.JobService().Create(job)
 	if err != nil {
 		respFmt.Code = http.StatusBadRequest
