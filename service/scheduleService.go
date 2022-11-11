@@ -99,6 +99,7 @@ func CreateCronTask(id string, task *model.Job) {
 		log.WithFields(log.Fields{
 			"name":   task.Name,
 			"method": task.Method,
+			"group":  task.Group,
 			"path":   task.Path,
 		}).Info()
 
@@ -112,6 +113,7 @@ func CreateCronTask(id string, task *model.Job) {
 				taskLogger.WithFields(log.Fields{
 					"name":  task.Name,
 					"path":  task.Path,
+					"group": task.Group,
 					"error": err.Error(),
 				}).Error()
 			}
@@ -123,6 +125,7 @@ func CreateCronTask(id string, task *model.Job) {
 				taskLogger.WithFields(log.Fields{
 					"name":  task.Name,
 					"path":  task.Path,
+					"group": task.Group,
 					"error": err.Error(),
 				}).Error()
 			}
@@ -130,6 +133,7 @@ func CreateCronTask(id string, task *model.Job) {
 			taskLogger.WithFields(log.Fields{
 				"name":     task.Name,
 				"path":     task.Path,
+				"group":    task.Group,
 				"response": string(body),
 			}).Info()
 
