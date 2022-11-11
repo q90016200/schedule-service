@@ -13,5 +13,6 @@ func RouteJobs(r *gin.Engine) {
 		jobs.GET("/jobs:id", controller.JobController().Query)
 		jobs.PUT("/jobs/:id", controller.JobController().Update)
 		jobs.DELETE("/jobs/:id", controller.JobController().Delete)
+		jobs.POST("/jobs/trigger", controller.JobController().Trigger)
 	}
 }

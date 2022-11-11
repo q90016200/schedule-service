@@ -33,6 +33,10 @@ func init() {
 		log.Fatalln("開啟 task 日誌檔案失敗：", err)
 	}
 
+	// 超過天數不保留 log
+	removeDate := time.Now().AddDate(0, 0, -10).Format(layout)
+	os.RemoveAll("./logs/task-" + removeDate + ".log")
+
 	taskLogger = log.New()
 	taskLogger.Formatter = &log.JSONFormatter{}
 	taskLogger.SetOutput(taskLogFile)
@@ -131,7 +135,6 @@ func CreateCronTask(id string, task *model.Job) {
 
 			break
 		}
-
 	}
 	//f()
 	c.AddFunc(task.Cron, f)

@@ -190,6 +190,28 @@ func (r JobControllerStruct) Delete(c *gin.Context) {
 	}.customResponse(c)
 }
 
+func (r JobControllerStruct) Trigger(c *gin.Context) {
+	respFmt := formatResp{
+		Code:    http.StatusOK,
+		Message: "",
+	}
+
+	var requestField struct {
+		Path      string `form:"path" json:"path" xml:"path"  binding:"required"`
+		Frequency string `form:"frequency" json:"frequency" xml:"frequency"  binding:"required"`
+		Interval  string `form:"interval" json:"interval" xml:"interval"  binding:"required"`
+	}
+	// 驗證請求資料
+	if err := c.ShouldBind(&requestField); err != nil {
+		respFmt.Code = http.StatusBadRequest
+		respFmt.Message = err.Error()
+		respFmt.customResponse(c)
+		return
+	}
+
+	fmt.Printf("%+v", requestField)
+}
+
 // 統一 resp
 func (r formatResp) customResponse(c *gin.Context) {
 	h := gin.H{
