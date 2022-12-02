@@ -121,13 +121,13 @@ func CreateCronTask(id string, task *model.Job) {
 
 			body, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
-				log.Error(task.Name + " | " + url + " | " + err.Error())
+				//log.Error(task.Name + " | " + url + " | " + err.Error())
 				taskLogger.WithFields(log.Fields{
 					"name":  task.Name,
 					"path":  task.Path,
 					"group": task.Group,
 					"error": err.Error(),
-				}).Error()
+				}).Info()
 			}
 			fmt.Println(task.Name+" | "+url+" | ", string(body))
 			taskLogger.WithFields(log.Fields{
