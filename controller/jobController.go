@@ -45,11 +45,12 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 	}
 
 	jobName := strings.TrimSpace(requestField.Name)
+	path := strings.TrimSpace(requestField.Path)
 	// 寫入任務至 database
 	job := model.Job{
 		Name:   jobName,
 		Method: requestField.Method,
-		Path:   requestField.Path,
+		Path:   path,
 		Cron:   requestField.Cron,
 	}
 	if requestField.Group != "" {
@@ -95,6 +96,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 	status := c.PostForm("status")
 	method := c.PostForm("method")
 	path := c.PostForm("path")
+	path = strings.TrimSpace(path)
 
 	data := map[string]interface{}{
 		"Name":      jobName,
