@@ -115,7 +115,7 @@ func CreateCronTask(id string, task *model.Job) {
 					"path":  task.Path,
 					"group": task.Group,
 					"error": err.Error(),
-				}).Error()
+				}).Info()
 			}
 			defer rsp.Body.Close()
 
