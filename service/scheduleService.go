@@ -75,7 +75,17 @@ func ScheduleStart() {
 
 			if v.Status == "running" {
 				if !exists {
+					//createStatus := true
+					//if v.Method == "http" {
+					//	u, err := url.Parse(v.Path)
+					//	if err != nil {
+					//		createStatus = false
+					//	}
+					//	fmt.Println(u.Host, u.Path)
+					//}
+					//if createStatus {
 					CreateCronTask(id, v)
+					//}
 				}
 			} else {
 				if exists {
@@ -105,9 +115,9 @@ func CreateCronTask(id string, task *model.Job) {
 
 		switch task.Method {
 		case "http":
-			url := task.Path
+			requestUrl := task.Path
 			client := http.Client{}
-			rsp, err := client.Get(url)
+			rsp, err := client.Get(requestUrl)
 			if err != nil {
 				//fmt.Println(err)
 				taskLogger.WithFields(log.Fields{
@@ -115,21 +125,22 @@ func CreateCronTask(id string, task *model.Job) {
 					"path":  task.Path,
 					"group": task.Group,
 					"error": err.Error(),
-				}).Info()
+				}).Error()
+				return
 			}
 			defer rsp.Body.Close()
 
 			body, err := ioutil.ReadAll(rsp.Body)
 			if err != nil {
-				//log.Error(task.Name + " | " + url + " | " + err.Error())
+				log.Error(task.Name + " | " + requestUrl + " | " + err.Error())
 				taskLogger.WithFields(log.Fields{
 					"name":  task.Name,
 					"path":  task.Path,
 					"group": task.Group,
 					"error": err.Error(),
-				}).Info()
+				}).Error()
 			}
-			fmt.Println(task.Name+" | "+url+" | ", string(body))
+			fmt.Println(task.Name+" | "+requestUrl+" | ", string(body))
 			taskLogger.WithFields(log.Fields{
 				"name":     task.Name,
 				"path":     task.Path,
