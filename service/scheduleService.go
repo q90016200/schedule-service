@@ -96,7 +96,6 @@ func ScheduleStart() {
 
 		//log.Info("[ScheduleService] check job end")
 	})
-
 	c.Start()
 }
 
