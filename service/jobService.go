@@ -1,6 +1,7 @@
 package service
 
 import (
+	"gorm.io/gorm"
 	"os"
 	"scheduleService/dao/mysql"
 	"scheduleService/model"
@@ -10,6 +11,8 @@ type JobServiceStruct struct{}
 
 // var mongoConfig mongodb.Config
 var mysqlConfig mysql.Config
+
+var sqlDB *gorm.DB
 
 // JobService 用來建構 JobService 的假建構子
 func JobService() JobServiceStruct {
@@ -27,6 +30,7 @@ func JobService() JobServiceStruct {
 		Port:     os.Getenv("MYSQL_PORT"),
 		DataBase: os.Getenv("MYSQL_DATABASE"),
 	}
+	sqlDB = mysqlConfig.Conn()
 	//}
 
 	return JobServiceStruct{}
@@ -55,12 +59,12 @@ func (r JobServiceStruct) Create(data model.Job) (id int64, err error) {
 	//	}
 
 	//case "mysql":
-	db, err := mysqlConfig.Conn()
-	if err != nil {
-		return id, err
-	}
+	//db, err := mysqlConfig.Conn()
+	//if err != nil {
+	//	return id, err
+	//}
 
-	result := db.Omit("ID").Create(&data)
+	result := sqlDB.Omit("ID").Create(&data)
 	if result.Error != nil {
 		return id, err
 	}
@@ -102,16 +106,11 @@ func (r JobServiceStruct) Query(id string) ([]*model.Job, error) {
 	//		results = append(results, &elem)
 	//	}
 	//case "mysql":
-	db, err := mysqlConfig.Conn()
-	if err != nil {
-		return results, err
-	}
-
-	//db.Unscoped().Find(&results)
+	//sqlDB.Unscoped().Find(&results)
 	if id != "" {
-		db.Find(&results, id)
+		sqlDB.Find(&results, id)
 	} else {
-		db.Find(&results)
+		sqlDB.Find(&results)
 	}
 
 	//}
@@ -136,8 +135,8 @@ func (r JobServiceStruct) Update(id string, data map[string]interface{}) error {
 	//_, err = coll.UpdateOne(context.TODO(), filter, update)
 
 	// mysql
-	db, err := mysqlConfig.Conn()
-	result := db.Model(&model.Job{}).Where("id = ?", id).Updates(data)
+	var err error
+	result := sqlDB.Model(&model.Job{}).Where("id = ?", id).Updates(data)
 	if result.Error != nil {
 		err = result.Error
 	}
@@ -147,8 +146,8 @@ func (r JobServiceStruct) Update(id string, data map[string]interface{}) error {
 
 func (r JobServiceStruct) Delete(id string) error {
 	// mysql
-	db, err := mysqlConfig.Conn()
-	result := db.Where("id = ?", id).Delete(&model.Job{})
+	var err error
+	result := sqlDB.Where("id = ?", id).Delete(&model.Job{})
 
 	if result.Error != nil {
 		err = result.Error

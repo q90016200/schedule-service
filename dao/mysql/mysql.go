@@ -5,6 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
+// DBConn DBConn
+var DBConn *gorm.DB
+
 type Config struct {
 	UserName string
 	PassWord string
@@ -13,7 +16,7 @@ type Config struct {
 	DataBase string
 }
 
-func (config *Config) Conn() (db *gorm.DB, err error) {
+func (config *Config) Conn() *gorm.DB {
 	dsn := config.UserName + ":" + config.PassWord + "@tcp(" + config.Host + ":" + config.Port + ")/" + config.DataBase + "?charset=utf8mb4&parseTime=true&loc=Local"
 
 	//fmt.Println(dsn)
@@ -22,6 +25,10 @@ func (config *Config) Conn() (db *gorm.DB, err error) {
 	//	DSN: dsn,
 	//}))
 
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	return
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic(err) // 連不到就直接panic裡服務重起再連
+	}
+
+	return db
 }
