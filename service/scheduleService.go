@@ -140,7 +140,7 @@ func CreateCronTask(id string, task *model.Job) {
 					"error": err.Error(),
 				}).Error()
 			}
-			fmt.Println(task.Name+" | "+requestUrl+" | ", string(body))
+			//fmt.Println(task.Name+" | "+requestUrl+" | ", string(body))
 			taskLogger.WithFields(log.Fields{
 				"name":     task.Name,
 				"path":     task.Path,
