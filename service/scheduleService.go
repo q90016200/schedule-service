@@ -103,9 +103,9 @@ func ScheduleStart() {
 // CreateCronTask 建立排程任務並執行第一次
 func CreateCronTask(id string, task *model.Job) {
 	taskId := FormatTaskId(id, task.Name)
+	fmt.Println("new task:  ", task.Name)
 	c := cron.New()
 	f := func() {
-		fmt.Println("new task:  ", task.Name)
 		log.WithFields(log.Fields{
 			"name":   task.Name,
 			"method": task.Method,
