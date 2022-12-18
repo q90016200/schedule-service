@@ -105,12 +105,12 @@ func CreateCronTask(id string, task *model.Job) {
 	fmt.Println("new task:  ", task.Name)
 	c := cron.New()
 	f := func() {
-		log.WithFields(log.Fields{
-			"name":   task.Name,
-			"method": task.Method,
-			"group":  task.Group,
-			"path":   task.Path,
-		}).Info()
+		//log.WithFields(log.Fields{
+		//	"name":   task.Name,
+		//	"method": task.Method,
+		//	"group":  task.Group,
+		//	"path":   task.Path,
+		//}).Info()
 
 		switch task.Method {
 		case "http":
