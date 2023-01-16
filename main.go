@@ -5,18 +5,26 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/robfig/cron/v3"
+	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"scheduleService/config/router"
+	"scheduleService/dao"
 	"scheduleService/service"
 	"time"
 )
+
+var db *gorm.DB
+
+func init() {
+	db = dao.Load()
+}
 
 func main() {
 	//testCron()
 
 	// schedule service start
-	service.ScheduleStart()
+	service.ScheduleStart(db)
 
 	// -----------------------------
 
@@ -46,7 +54,7 @@ func main() {
 			"title": "Hello Gin",
 		})
 	})
-	router.RouteJobs(r)
+	router.RouteJobs(r, db)
 
 	//r.Group("/api/job")
 

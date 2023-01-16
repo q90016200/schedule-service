@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"net/http"
 	"scheduleService/model"
 	"scheduleService/service"
@@ -19,7 +20,10 @@ type formatResp struct {
 	Data    interface{}
 }
 
-func JobController() JobControllerStruct {
+var sqlDB *gorm.DB
+
+func JobController(db *gorm.DB) JobControllerStruct {
+	sqlDB = db
 	return JobControllerStruct{}
 }
 
@@ -57,7 +61,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		job.Group = requestField.Group
 	}
 
-	jobId, err := service.JobService().Create(job)
+	jobId, err := service.JobService(sqlDB).Create(job)
 	if err != nil {
 		respFmt.Code = http.StatusBadRequest
 		respFmt.Message = err.Error()
@@ -74,7 +78,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 
 func (r JobControllerStruct) Query(c *gin.Context) {
 	id := c.DefaultQuery("id", "")
-	result, err := service.JobService().Query(id)
+	result, err := service.JobService(sqlDB).Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -110,7 +114,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 
 	fmt.Printf("%+v", data)
 
-	query, err := service.JobService().Query(id)
+	query, err := service.JobService(sqlDB).Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -119,7 +123,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		return
 	}
 
-	err = service.JobService().Update(id, data)
+	err = service.JobService(sqlDB).Update(id, data)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -170,7 +174,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 func (r JobControllerStruct) Delete(c *gin.Context) {
 	id := c.Param("id")
 
-	result, err := service.JobService().Query(id)
+	result, err := service.JobService(sqlDB).Query(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -179,7 +183,7 @@ func (r JobControllerStruct) Delete(c *gin.Context) {
 		return
 	}
 
-	err = service.JobService().Delete(id)
+	err = service.JobService(sqlDB).Delete(id)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,

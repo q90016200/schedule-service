@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -43,7 +44,7 @@ func init() {
 }
 
 // ScheduleStart 啟動排程任務
-func ScheduleStart() {
+func ScheduleStart(db *gorm.DB) {
 	//log.Info("[ScheduleService] is running")
 
 	// 存放需執行的任務
@@ -63,7 +64,7 @@ func ScheduleStart() {
 	// 建立檢查任務狀態任務
 	c.AddFunc("* * * * *", func() {
 		//log.Info("[ScheduleService] check job start")
-		query, err := JobService().Query("")
+		query, err := JobService(db).Query("")
 		if err != nil {
 			panic("query job fail")
 		}

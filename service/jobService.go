@@ -2,7 +2,6 @@ package service
 
 import (
 	"gorm.io/gorm"
-	"os"
 	"scheduleService/dao/mysql"
 	"scheduleService/model"
 )
@@ -15,7 +14,7 @@ var mysqlConfig mysql.Config
 var sqlDB *gorm.DB
 
 // JobService 用來建構 JobService 的假建構子
-func JobService() JobServiceStruct {
+func JobService(db *gorm.DB) JobServiceStruct {
 	//switch os.Getenv("DATABASE") {
 	//case "mongodb":
 	//	mongoConfig = mongodb.Config{
@@ -23,15 +22,17 @@ func JobService() JobServiceStruct {
 	//		Port: os.Getenv("MONGODB_PORT"),
 	//	}
 	//case "mysql":
-	mysqlConfig = mysql.Config{
-		UserName: os.Getenv("MYSQL_USER"),
-		PassWord: os.Getenv("MYSQL_PASSWORD"),
-		Host:     os.Getenv("MYSQL_HOST"),
-		Port:     os.Getenv("MYSQL_PORT"),
-		DataBase: os.Getenv("MYSQL_DATABASE"),
-	}
-	sqlDB = mysqlConfig.Conn()
+	//mysqlConfig = mysql.Config{
+	//	UserName: os.Getenv("MYSQL_USER"),
+	//	PassWord: os.Getenv("MYSQL_PASSWORD"),
+	//	Host:     os.Getenv("MYSQL_HOST"),
+	//	Port:     os.Getenv("MYSQL_PORT"),
+	//	DataBase: os.Getenv("MYSQL_DATABASE"),
 	//}
+	//sqlDB = mysqlConfig.Conn()
+	//}
+
+	sqlDB = db
 
 	return JobServiceStruct{}
 }
