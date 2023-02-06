@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"regexp"
 	"scheduleService/model"
 	"strconv"
 	"sync"
@@ -71,7 +70,7 @@ func ScheduleStart(db *gorm.DB) {
 
 		for _, v := range query {
 			id := strconv.FormatInt(v.ID, 10)
-			idKey := FormatTaskId(id, v.Name)
+			idKey := FormatTaskId(id)
 			_, exists := syncTasks.Load(idKey)
 
 			if v.Status == "running" {
@@ -102,7 +101,7 @@ func ScheduleStart(db *gorm.DB) {
 
 // CreateCronTask 建立排程任務並執行第一次
 func CreateCronTask(id string, task *model.Job) {
-	taskId := FormatTaskId(id, task.Name)
+	taskId := FormatTaskId(id)
 	fmt.Println("new task:  ", task.Name)
 	c := cron.New()
 	f := func() {
@@ -159,7 +158,7 @@ func CreateCronTask(id string, task *model.Job) {
 }
 
 func StopCronTask(id string, name string) {
-	id = FormatTaskId(id, name)
+	id = FormatTaskId(id)
 	task, exists := syncTasks.Load(id)
 	if exists {
 		task.(*cron.Cron).Stop()
@@ -186,10 +185,10 @@ func (l *CLog) Error(err error, msg string, keysAndValues ...interface{}) {
 	}).Warn(msg)
 }
 
-func FormatTaskId(id interface{}, name string) string {
+func FormatTaskId(id interface{}) string {
 	taskId := ""
-	reg := regexp.MustCompile(`[\s\p{Zs}]{1,}`)
-	name = reg.ReplaceAllString(name, "")
+	//reg := regexp.MustCompile(`[\s\p{Zs}]{1,}`)
+	//name = reg.ReplaceAllString(name, "")
 
 	switch id.(type) {
 	case int64:
@@ -197,5 +196,6 @@ func FormatTaskId(id interface{}, name string) string {
 	case string:
 		taskId = id.(string)
 	}
-	return "task-" + taskId + "-" + name
+	//return "task-" + taskId + "-" + name
+	return "task-" + taskId
 }
