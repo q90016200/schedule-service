@@ -38,7 +38,7 @@ func JobService(db *gorm.DB) JobServiceStruct {
 }
 
 func (r JobServiceStruct) Create(data model.Job) (id int64, err error) {
-	data.Status = "running"
+	//data.Status = "running"
 
 	//switch os.Getenv("DATABASE") {
 	//case "mongodb":

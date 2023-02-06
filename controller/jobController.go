@@ -38,6 +38,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		Method string `form:"method" json:"method" xml:"method" binding:"required"`
 		Path   string `form:"path" json:"path" xml:"path"  binding:"required"`
 		Cron   string `form:"cron" json:"cron" xml:"cron"  binding:"required"`
+		Status string `form:"status" json:"status" xml:"status"  binding:"required"`
 		Group  string `form:"group" json:"group"`
 	}
 	// 驗證請求資料
@@ -55,6 +56,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 		Name:   jobName,
 		Method: requestField.Method,
 		Path:   path,
+		Status: requestField.Status,
 		Cron:   requestField.Cron,
 	}
 	if requestField.Group != "" {
