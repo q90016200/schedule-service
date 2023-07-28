@@ -36,6 +36,7 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 	var requestField struct {
 		Name   string `form:"name" json:"name" xml:"name"  binding:"required"`
 		Method string `form:"method" json:"method" xml:"method" binding:"required"`
+		Consul string `form:"consul" json:"consul" xml:"consul"`
 		Path   string `form:"path" json:"path" xml:"path"  binding:"required"`
 		Cron   string `form:"cron" json:"cron" xml:"cron"  binding:"required"`
 		Status string `form:"status" json:"status" xml:"status"  binding:"required"`
@@ -51,10 +52,17 @@ func (r JobControllerStruct) Create(c *gin.Context) {
 
 	jobName := strings.TrimSpace(requestField.Name)
 	path := strings.TrimSpace(requestField.Path)
+
+	consul := ""
+	if requestField.Method == "grpc" {
+		consul = strings.TrimSpace(requestField.Consul)
+	}
+
 	// 寫入任務至 database
 	job := model.Job{
 		Name:   jobName,
 		Method: requestField.Method,
+		Consul: consul,
 		Path:   path,
 		Status: requestField.Status,
 		Cron:   requestField.Cron,
@@ -114,7 +122,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		"UpdatedAt": time.Now().UTC(),
 	}
 
-	fmt.Printf("%+v", data)
+	//fmt.Printf("%+v", data)
 
 	query, err := service.JobService(sqlDB).Query(id)
 	if err != nil {

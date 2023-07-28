@@ -10,7 +10,6 @@ import (
 	"os"
 	"scheduleService/config/router"
 	"scheduleService/dao"
-	"scheduleService/service"
 	"time"
 )
 
@@ -24,7 +23,9 @@ func main() {
 	//testCron()
 
 	// schedule service start
-	service.ScheduleStart(db)
+	//service.ScheduleStart(db)
+
+	return
 
 	// -----------------------------
 

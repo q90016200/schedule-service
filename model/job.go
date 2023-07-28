@@ -10,6 +10,7 @@ type Job struct {
 	ID        int64          `json:"id" bson:"_id,omitempty"`
 	Name      string         `json:"name" bson:"name,omitempty"`
 	Method    string         `json:"method" bson:"method,omitempty"`
+	Consul    string         `json:"consul" bson:"consul,omitempty"`
 	Path      string         `json:"path" bson:"path,omitempty"`
 	Cron      string         `json:"cron" bson:"cron,omitempty"`
 	Group     string         `json:"group" bson:"group"`
