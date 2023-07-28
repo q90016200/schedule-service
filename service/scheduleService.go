@@ -115,7 +115,7 @@ func CreateCronTask(id string, task *model.Job) {
 		switch task.Method {
 		case "http":
 			requestUrl := task.Path
-			client := http.Client{}
+			client := http.Client{Timeout: time.Second * 20}
 			rsp, err := client.Get(requestUrl)
 			if err != nil {
 				//fmt.Println(err)
