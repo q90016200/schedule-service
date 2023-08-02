@@ -1,9 +1,13 @@
 package service
 
 import (
+	"context"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"github.com/zeromicro/go-zero/zrpc"
+	_ "github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"gorm.io/gorm"
 	"io/ioutil"
 	"net/http"
@@ -103,7 +107,24 @@ func ScheduleStart(db *gorm.DB) {
 func CreateCronTask(id string, task *model.Job) {
 	taskId := FormatTaskId(id)
 	fmt.Println("new task:  ", task.Name)
-	c := cron.New()
+
+	//defer func() {
+	//	// 可以取得 panic 的回傳值
+	//	r := recover()
+	//	if r != nil {
+	//		fmt.Println("Recovered in f", r)
+	//	}
+	//}()
+
+	logger := &CLog{clog: log.New()}
+	logger.clog.SetFormatter(&log.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+
+	c := cron.New(cron.WithChain(cron.SkipIfStillRunning(logger), cron.Recover(logger)))
+
+	//c := cron.New()
 	f := func() {
 		//log.WithFields(log.Fields{
 		//	"name":   task.Name,
@@ -148,7 +169,22 @@ func CreateCronTask(id string, task *model.Job) {
 			}).Info()
 
 			break
+		case "grpc":
+			conf := zrpc.RpcClientConf{
+				Target:  task.Consul,
+				Timeout: 20000,
+			}
+			client, _ := zrpc.NewClient(conf)
+			g := client.Conn()
+			em := empty.Empty{}
+			err := g.Invoke(context.Background(), task.Path, &em, &em)
+			log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
+			defer g.Close()
+			//os.Exit(0)
+
+			break
 		}
+
 	}
 	//f()
 	c.AddFunc(task.Cron, f)

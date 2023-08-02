@@ -109,6 +109,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 	cron := c.PostForm("cron")
 	status := c.PostForm("status")
 	method := c.PostForm("method")
+	consul := c.PostForm("consul")
 	path := c.PostForm("path")
 	path = strings.TrimSpace(path)
 
@@ -116,6 +117,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		"Name":      jobName,
 		"Method":    method,
 		"Path":      path,
+		"Consul":    consul,
 		"Cron":      cron,
 		"Group":     c.DefaultPostForm("group", ""),
 		"Status":    c.PostForm("status"),
@@ -150,6 +152,10 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 		cronStop = true
 		cronStart = true
 	}
+	if job.Consul != consul {
+		cronStop = true
+		cronStart = true
+	}
 	if status != job.Status {
 		if status == "running" {
 			cronStart = true
@@ -172,6 +178,7 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 			Name:   jobName,
 			Method: method,
 			Path:   path,
+			Consul: consul,
 			Cron:   cron,
 		})
 	}
