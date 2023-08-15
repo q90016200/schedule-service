@@ -106,7 +106,7 @@ func ScheduleStart(db *gorm.DB) {
 // CreateCronTask 建立排程任務並執行第一次
 func CreateCronTask(id string, task *model.Job) {
 	taskId := FormatTaskId(id)
-	fmt.Println("new task:  ", task.Name)
+	fmt.Println("new task:  ", task.ID, task.Name, task.Group)
 
 	//defer func() {
 	//	// 可以取得 panic 的回傳值
@@ -197,6 +197,7 @@ func StopCronTask(id string, name string) {
 	id = FormatTaskId(id)
 	task, exists := syncTasks.Load(id)
 	if exists {
+		fmt.Println("stop task:  ", id, name)
 		task.(*cron.Cron).Stop()
 		syncTasks.Delete(id)
 
