@@ -126,16 +126,16 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 
 	//fmt.Printf("%+v", data)
 
-	query, err := service.JobService(sqlDB).Query(id)
-	if err != nil {
-		formatResp{
-			Code:    http.StatusBadRequest,
-			Message: err.Error(),
-		}.customResponse(c)
-		return
-	}
+	//query, err := service.JobService(sqlDB).Query(id)
+	//if err != nil {
+	//	formatResp{
+	//		Code:    http.StatusBadRequest,
+	//		Message: err.Error(),
+	//	}.customResponse(c)
+	//	return
+	//}
 
-	err = service.JobService(sqlDB).Update(id, data)
+	err := service.JobService(sqlDB).Update(id, data)
 	if err != nil {
 		formatResp{
 			Code:    http.StatusBadRequest,
@@ -145,35 +145,8 @@ func (r JobControllerStruct) Update(c *gin.Context) {
 	}
 
 	// 判斷排程是否重啟
-	cronStart := false
-	cronStop := false
-	job := query[0]
-	if job.Cron != cron {
-		cronStop = true
-		cronStart = true
-	}
-	if job.Consul != consul {
-		cronStop = true
-		cronStart = true
-	}
-	if status != job.Status {
-		if status == "running" {
-			cronStart = true
-		} else if status == "stopped" {
-			cronStart = false
-			cronStop = true
-		}
-	}
-	if job.Status == "stopped" {
-		cronStart = false
-	}
-
-	//fmt.Println("cronStart:", cronStart, "cronStop:", cronStop)
-
-	if cronStop {
-		service.StopCronTask(id, jobName)
-	}
-	if cronStart {
+	service.StopCronTask(id, jobName)
+	if status == "running" {
 		service.CreateCronTask(id, &model.Job{
 			Name:   jobName,
 			Method: method,

@@ -212,6 +212,13 @@ func StopCronTask(id string, name string) {
 
 		fmt.Println("task: ", name, " - stop")
 	}
+
+	// 刪除 rpcClients
+	_, clientExists := rpcClients.Load(id)
+	if clientExists {
+		rpcClients.Delete(id)
+	}
+
 }
 
 type CLog struct {
