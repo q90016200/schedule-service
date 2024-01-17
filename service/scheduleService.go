@@ -1,9 +1,12 @@
 package service
 
 import (
+	"context"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"github.com/zeromicro/go-zero/zrpc"
 	_ "github.com/zeromicro/zero-contrib/zrpc/registry/consul"
 	"gorm.io/gorm"
 	"io/ioutil"
@@ -16,6 +19,7 @@ import (
 )
 
 var syncTasks = sync.Map{}
+var rpcClients = sync.Map{}
 var taskLogger *log.Logger
 
 func init() {
@@ -167,19 +171,27 @@ func CreateCronTask(id string, task *model.Job) {
 
 			break
 		case "grpc":
-			//conf := zrpc.RpcClientConf{
-			//	Target:  task.Consul,
-			//	Timeout: 20000,
-			//}
-			//client, _ := zrpc.NewClient(conf)
-			//g := client.Conn()
-			//em := empty.Empty{}
-			//err := g.Invoke(context.Background(), task.Path, &em, &em)
-			//log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
-			//defer g.Close()
-			////os.Exit(0)
-			//
-			//break
+			clientMap, exists := rpcClients.Load(taskId)
+			var rpcClient zrpc.Client
+			if !exists {
+				conf := zrpc.RpcClientConf{
+					Target:  task.Consul,
+					Timeout: 20000,
+				}
+				client, _ := zrpc.NewClient(conf)
+				rpcClients.Store(taskId, client)
+				rpcClient = client
+			} else {
+				rpcClient = clientMap.(zrpc.Client)
+			}
+
+			g := rpcClient.Conn()
+			em := empty.Empty{}
+			err := g.Invoke(context.Background(), task.Path, &em, &em)
+			log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
+			defer g.Close()
+
+			break
 		}
 
 	}
