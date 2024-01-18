@@ -179,17 +179,18 @@ func CreateCronTask(id string, task *model.Job) {
 
 			g := rpcClient.Conn()
 			em := empty.Empty{}
+			fmt.Println(taskId, task.Name, " g.Invoke ")
 			err := g.Invoke(context.Background(), task.Path, &em, &em)
 			if err != nil {
-				//log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
+				log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
 				//fmt.Println("grpc err StopCronTask")
 				//StopCronTask(strconv.FormatInt(task.ID, 10), task.Name)
 			}
-			defer func() {
-				fmt.Println("grpc close event")
-				g.Close()
-				//rpcClients.Delete(taskId)
-			}()
+			//defer func() {
+			//	fmt.Println("grpc close event")
+			//	g.Close()
+			//	//rpcClients.Delete(taskId)
+			//}()
 
 			break
 		}
