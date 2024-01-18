@@ -191,8 +191,8 @@ func CreateCronTask(id string, task *model.Job) {
 			log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
 			defer func() {
 				g.Close()
-				syncTasks.Delete(taskId)
-				rpcClients.Delete(taskId)
+				StopCronTask(taskId, task.Name)
+				//rpcClients.Delete(taskId)
 			}()
 
 			break
