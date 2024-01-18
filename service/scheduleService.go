@@ -185,7 +185,7 @@ func CreateCronTask(id string, task *model.Job) {
 			}
 			defer func() {
 				StopCronTask(taskId, task.Name)
-				g.Close()
+				//g.Close()
 				//rpcClients.Delete(taskId)
 			}()
 
@@ -201,6 +201,7 @@ func CreateCronTask(id string, task *model.Job) {
 }
 
 func StopCronTask(id string, name string) {
+	fmt.Println("StopCronTask")
 	id = FormatTaskId(id)
 	task, exists := syncTasks.Load(id)
 	if exists {
