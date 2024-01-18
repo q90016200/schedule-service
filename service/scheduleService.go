@@ -67,7 +67,6 @@ func ScheduleStart(db *gorm.DB) {
 
 	// 建立檢查任務狀態任務
 	c.AddFunc("* * * * *", func() {
-		//log.Info("[ScheduleService] check job start")
 		query, err := JobService(db).Query("")
 		if err != nil {
 			panic("query job fail")
@@ -79,20 +78,12 @@ func ScheduleStart(db *gorm.DB) {
 			_, exists := syncTasks.Load(idKey)
 
 			if v.Status == "running" {
+				fmt.Println("cron test 11111", v.Name)
 				if !exists {
-					//createStatus := true
-					//if v.Method == "http" {
-					//	u, err := url.Parse(v.Path)
-					//	if err != nil {
-					//		createStatus = false
-					//	}
-					//	fmt.Println(u.Host, u.Path)
-					//}
-					//if createStatus {
 					CreateCronTask(id, v)
-					//}
 				}
 			} else {
+				fmt.Println("cron test 22222", v.Name)
 				if exists {
 					StopCronTask(id, v.Name)
 				}
@@ -188,10 +179,12 @@ func CreateCronTask(id string, task *model.Job) {
 			g := rpcClient.Conn()
 			em := empty.Empty{}
 			err := g.Invoke(context.Background(), task.Path, &em, &em)
-			log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
+			if err != nil {
+				log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
+			}
 			defer func() {
-				g.Close()
 				StopCronTask(taskId, task.Name)
+				g.Close()
 				//rpcClients.Delete(taskId)
 			}()
 
@@ -218,11 +211,7 @@ func StopCronTask(id string, name string) {
 	}
 
 	// 刪除 rpcClients
-	_, clientExists := rpcClients.Load(id)
-	if clientExists {
-		rpcClients.Delete(id)
-	}
-
+	rpcClients.Delete(id)
 }
 
 type CLog struct {
