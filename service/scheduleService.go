@@ -78,12 +78,13 @@ func ScheduleStart(db *gorm.DB) {
 			_, exists := syncTasks.Load(idKey)
 
 			if v.Status == "running" {
-				fmt.Println("cron test 11111", v.Name)
+				fmt.Println("cron Status running", v.Name)
 				if !exists {
+					fmt.Println("cron Status running create task", v.Name)
 					CreateCronTask(id, v)
 				}
 			} else {
-				fmt.Println("cron test 22222", v.Name)
+				fmt.Println("cron status ", v.Status, v.Name)
 				if exists {
 					StopCronTask(id, v.Name)
 				}
