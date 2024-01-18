@@ -189,7 +189,10 @@ func CreateCronTask(id string, task *model.Job) {
 			em := empty.Empty{}
 			err := g.Invoke(context.Background(), task.Path, &em, &em)
 			log.Error(task.Name + " | " + task.Consul + task.Path + " | " + err.Error())
-			//defer g.Close()
+			defer func() {
+				g.Close()
+				rpcClients.Delete(taskId)
+			}()
 
 			break
 		}
